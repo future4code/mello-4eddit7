@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import LoginPage from "./pages/Login/LoginPage";
 import FeedPage from "./pages/Feed/FeedPage";
 import RegisterPage from "./pages/Register/RegisterPage";
+import PostPage from "./pages/PostsPage/PostsPage";
 
 export default function Rota() {
   return (
@@ -20,6 +21,9 @@ export default function Rota() {
           </Route>
           <Route exact path="/feed">
             <FeedPage />
+          </Route>
+          <Route exact path="/post">
+            <PostPage />
           </Route>
         </Switch>
       </div>
