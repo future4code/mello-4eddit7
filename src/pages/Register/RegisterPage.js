@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { useHistory } from "react-router-dom";
+import axios from "axios";
 
 const Container = styled.div`
   background: white;
   padding: 25px;
   border-radius: 20px;
   max-width: 400px;
-  width: 100%;
+  width: 350px;
   max-height: 400px;
   height: 280px;
   display: flex;
@@ -70,27 +72,66 @@ const Button = styled.button`
 `;
 
 const RegisterPage = () => {
+  const history = useHistory();
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const goToLoginPage = () => {
+    history.push("/");
+  };
+
+  const handleRegister = async () => {
+    const body = {
+      username: userName,
+      email: email,
+      password: password,
+    };
+
+    try {
+      const response = await axios.post(
+        "https://us-central1-labenu-apis.cloudfunctions.net/labEddit/signup",
+        body
+      );
+
+      localStorage.setItem("token", response.data.token);
+      history.replace("/feed");
+    } catch (e) {
+      alert("Cadastro falhou :(");
+    }
+  };
+
   return (
     <Container>
       <Content>
-        <form>
-          <div>
-            <p>Nome de usuário</p>
-            <Input type="text" />
-          </div>
-          <div>
-            <p>Email</p>
-            <Input type="email" />
-          </div>
-          <div>
-            <p>Senha</p>
-            <Input type="password" />
-          </div>
-          <div>
-            <span>Cancelar</span>
-            <Button type="submit">Cadastrar</Button>
-          </div>
-        </form>
+        <div>
+          <p>Nome de usuário</p>
+          <Input
+            type="text"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+          />
+        </div>
+        <div>
+          <p>Email</p>
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          <p>Senha</p>
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <div>
+          <span onClick={goToLoginPage}>Cancelar</span>
+          <Button onClick={handleRegister}>Cadastrar</Button>
+        </div>
       </Content>
     </Container>
   );
