@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import styled from "styled-components";
+import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 const Container = styled.div`
   background: white;
   padding: 10px;
   border-radius: 20px;
-  max-width: 400px;
-  width: 100%;
+  max-width: 600px;
+  width: 350px;
   max-height: 400px;
-  height: 230px;
+  height: 260px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -70,27 +72,80 @@ const Button = styled.button`
   }
 `;
 
+const ErrorWarning = styled.div`
+  border: 1px solid red;
+  color: red;
+  border-radius: 20px;
+  padding: 2px;
+  padding-top: 45px;
+`;
+
 const LoginPage = () => {
+  const history = useHistory()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const baseUrl = "https://us-central1-labenu-apis.cloudfunctions.net/labEddit"
+
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+
+    if (token !== null) {
+      history.push("/feed")
+    }
+  }, [history])
+
+  const goToRegisterPage = () => {
+    history.push("/register")
+  }
+
+  const handleLogin = async () => {
+    const body = {
+      email: email,
+      password: password
+    }
+
+    try {
+      const response = await axios.post(`${baseUrl}/login`, body)
+
+      localStorage.setItem("token", response.data.token)
+      history.replace("/feed")
+    } catch (e) {
+      if (e.response.status === 401) {
+        setError("Login ou senha inválido(a)")
+      } else {
+        alert("Login falhou :(")
+      }
+    }
+  }
+
   return (
     <Container>
       <Content>
-        <form>
-          <div>
-            <p>Email</p>
-            <Input type="email" />
-          </div>
-          <div>
-            <p>Senha</p>
-            <Input type="password" />
-          </div>
-          <div>
-            <span>Criar Conta</span>
-            <Button type="submit">Entrar</Button>
-          </div>
-        </form>
+        {error && <ErrorWarning>{error}</ErrorWarning>}
+        <div>
+          <p>Email</p>
+          <Input 
+            type="email" 
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          <p>Senha</p>
+          <Input 
+            type="password" 
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+        </div>
+        <div>
+          <span onClick={goToRegisterPage}>Criar Conta</span>
+          <Button onClick={handleLogin}>Entrar</Button>
+        </div>
       </Content>
     </Container>
   );
-};
+}
 
 export default LoginPage;
