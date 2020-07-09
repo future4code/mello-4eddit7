@@ -22,7 +22,7 @@ export default function Rota() {
           <Route exact path="/feed">
             <FeedPage />
           </Route>
-          <Route exact path="/post">
+          <Route path="/post/:postId">
             <PostPage />
           </Route>
         </Switch>
