@@ -30,8 +30,7 @@ const StyleListDetails = styled.div`
   width: 100%;
 `;
 
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlhYMXJVbkVEU2VCeHRRQ1FaUmt2IiwidXNlcm5hbWUiOiJkaWVnb01lc3NpYXMiLCJlbWFpbCI6ImRpZWdvLW1lc3NpYXNAaG90bWFpbC5jb20iLCJpYXQiOjE1OTQxNDg5MDJ9.JbAPuDU5o0qyL4oqhpnRaRWSugjMODhF1seGvh53pyo";
+const token = localStorage.getItem("token");
 
 let body;
 
