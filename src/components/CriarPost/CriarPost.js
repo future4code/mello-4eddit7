@@ -57,7 +57,6 @@ const CriarPost = (props) => {
 
   return (
     <div>
-      <h1>Feed</h1>
       <Container>
         <Entrada
           value={textPost}
