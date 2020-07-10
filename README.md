@@ -1,5 +1,9 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+link do surge : http://labeddit-v8.surge.sh
+
+Equipe: Diego Messias, Henrique Martins e Marcos Oliveira
+
 ## Available Scripts
 
 In the project directory, you can run:
