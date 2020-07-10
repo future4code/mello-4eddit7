@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import useAuthorization from "../../hooks/useAuthorization";
+import CriarPost from "../../components/CriarPost/CriarPost";
 
 const EstiloFeed = styled.div`
   display: flex;
@@ -30,13 +32,13 @@ const StyleListDetails = styled.div`
   width: 100%;
 `;
 
-const token = localStorage.getItem("token");
-
 let body;
 
 function FeedPage() {
+  useAuthorization();
+  const token = localStorage.getItem("token");
+
   const [posts, setPosts] = useState([""]);
-  const [textPost, setTextPost] = useState("");
   const [curtir, setCurtir] = useState("");
 
   let history = useHistory();
@@ -58,33 +60,6 @@ function FeedPage() {
       )
       .then((response) => {
         setPosts(response.data.posts);
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const createPost = () => {
-    const body = {
-      text: textPost,
-      title: "Titulo aqui!",
-    };
-
-    const headers = {
-      headers: {
-        Authorization: token,
-      },
-    };
-
-    axios
-      .post(
-        "https://us-central1-labenu-apis.cloudfunctions.net/labEddit/posts",
-        body,
-        headers
-      )
-      .then((response) => {
-        getPosts();
         console.log(response);
       })
       .catch((error) => {
@@ -124,10 +99,6 @@ function FeedPage() {
       });
   };
 
-  const handleInputPost = (event) => {
-    setTextPost(event.target.value);
-  };
-
   const goToPostPage = (idPost) => {
     history.push(`/post/${idPost}`);
   };
@@ -135,7 +106,7 @@ function FeedPage() {
   const listPosts = posts.map((post) => {
     return (
       <StyleListPosts>
-        <div>{post.username} -</div>
+        <h3>{post.username}</h3>
         <div>{post.text}</div>
         <StyleListDetails>
           <div>
@@ -165,21 +136,12 @@ function FeedPage() {
     );
   });
 
-  console.log(textPost);
   console.log(posts);
 
   return (
     <div>
       <EstiloFeed>
-        <div>FEED</div>
-        <div>
-          <input
-            value={textPost}
-            placeholder="Escreva seu post"
-            onChange={handleInputPost}
-          ></input>
-          <button onClick={createPost}>POST</button>
-        </div>
+        <CriarPost getPosts={getPosts} />
         <hr></hr>
         <div>{listPosts}</div>
       </EstiloFeed>
