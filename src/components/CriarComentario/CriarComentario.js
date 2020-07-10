@@ -20,6 +20,10 @@ const CriarComentario = (props) => {
   const history = useHistory();
   const pathParams = useParams();
 
+  const goBack = () => {
+    history.goBack();
+  };
+
   const handleInputComment = (event) => {
     setTextComment(event.target.value);
   };
@@ -58,7 +62,6 @@ const CriarComentario = (props) => {
 
   return (
     <div>
-      <h1>Detalhes do Post</h1>
       <Container>
         <p>Criar Comentário:</p>
         <Entrada
@@ -68,6 +71,7 @@ const CriarComentario = (props) => {
         />
         <button onClick={createComment}>Comentar</button>
         <button onClick={handleLogout}>Logout</button>
+        <button onClick={goBack}>Voltar</button>
       </Container>
     </div>
   );

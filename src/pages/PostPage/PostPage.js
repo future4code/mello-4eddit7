@@ -3,6 +3,37 @@ import axios from "axios";
 import { useParams } from "react-router";
 import useAuthorization from "../../hooks/useAuthorization";
 import CriarComentario from "../../components/CriarComentario/CriarComentario";
+import styled from "styled-components";
+
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Paper from "@material-ui/core/Paper";
+
+const StyleListPosts = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  align-items: center;
+  width: 500px;
+  min-height: 200px;
+  justify-content: space-around;
+`;
+
+const StyleListDetails = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin-top: 100px;
+`;
+
+const EstiloFeed = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+  justify-items: center;
+  margin: auto;
+`;
 
 function PostPage() {
   useAuthorization();
@@ -10,10 +41,12 @@ function PostPage() {
   useEffect(() => {
     getPostDetail();
   }, []);
+
   const token = localStorage.getItem("token");
   const pathParams = useParams();
 
   const [postDetail, setPostDetail] = useState({ comments: [] });
+  const [condicao, setCondicao] = useState();
 
   const getPostDetail = () => {
     const headers = {
@@ -28,6 +61,7 @@ function PostPage() {
       )
       .then((response) => {
         setPostDetail(response.data.post);
+        setCondicao(1);
       })
       .catch((error) => {
         console.log(error);
@@ -102,63 +136,76 @@ function PostPage() {
 
   const listComments = postDetail.comments.map((comment) => {
     return (
-      <div key={comment.id}>
-        <div>Nome:{comment.username}</div>
-        <div>Texto Comentario:{comment.text}</div>
-        <div>
-          <button
-            onClick={() =>
-              voteComment(comment.id, 1, comment.userVoteDirection)
-            }
-          >
-            Curtir
-          </button>
-          <span>Votos:{comment.votesCount}</span>
-          <button
-            onClick={() =>
-              voteComment(comment.id, -1, comment.userVoteDirection)
-            }
-          >
-            Descurtir
-          </button>
-        </div>
-        <hr></hr>
-      </div>
+      <Paper elevation={3}>
+        <StyleListPosts key={comment.id}>
+          <h3>{comment.username}</h3>
+          <div>{comment.text}</div>
+          <StyleListDetails>
+            <button
+              onClick={() =>
+                voteComment(comment.id, 1, comment.userVoteDirection)
+              }
+            >
+              Curtir
+            </button>
+            <span>Votos:{comment.votesCount}</span>
+            <button
+              onClick={() =>
+                voteComment(comment.id, -1, comment.userVoteDirection)
+              }
+            >
+              Descurtir
+            </button>
+          </StyleListDetails>
+        </StyleListPosts>
+      </Paper>
     );
   });
 
   console.log(postDetail);
 
-  return (
-    <div>
-      <CriarComentario getPostDetail={getPostDetail} />
-      <h1>POST</h1>
-      <h3>{postDetail.username}</h3>
-      <div>Texto:{postDetail.text}</div>
+  if (condicao === undefined) {
+    return (
       <div>
-        <button
-          onClick={() =>
-            votePost(postDetail.id, 1, postDetail.userVoteDirection)
-          }
-        >
-          Curtir
-        </button>
-        <span>Votos:{postDetail.votesCount}</span>
-        <button
-          onClick={() =>
-            votePost(postDetail.id, -1, postDetail.userVoteDirection)
-          }
-        >
-          Descurtir
-        </button>
+        <CircularProgress />
       </div>
+    );
+  } else {
+    return (
+      <EstiloFeed>
+        <CriarComentario getPostDetail={getPostDetail} />
+        <h1>Detalhes do Post</h1>
+        <h1>POST</h1>
+        <Paper>
+          <StyleListPosts>
+            <h3>{postDetail.username}</h3>
+            <div>{postDetail.text}</div>
+            <div>
+              <button
+                onClick={() =>
+                  votePost(postDetail.id, 1, postDetail.userVoteDirection)
+                }
+              >
+                Curtir
+              </button>
+              <span>Votos:{postDetail.votesCount}</span>
+              <button
+                onClick={() =>
+                  votePost(postDetail.id, -1, postDetail.userVoteDirection)
+                }
+              >
+                Descurtir
+              </button>
+            </div>
+            <div>Comentarios:{postDetail.commentsCount}</div>
+          </StyleListPosts>
+        </Paper>
 
-      <div>Comentarios:{postDetail.commentsCount}</div>
-      <hr></hr>
-      <h1>Comentarios</h1>
-      <div>{listComments}</div>
-    </div>
-  );
+        <h1>Comentarios</h1>
+        <div>{listComments}</div>
+      </EstiloFeed>
+    );
+  }
 }
 
 export default PostPage;

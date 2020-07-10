@@ -5,6 +5,9 @@ import { useHistory } from "react-router-dom";
 import useAuthorization from "../../hooks/useAuthorization";
 import CriarPost from "../../components/CriarPost/CriarPost";
 
+import Paper from "@material-ui/core/Paper";
+import CircularProgress from "@material-ui/core/CircularProgress";
+
 const EstiloFeed = styled.div`
   display: flex;
   flex-direction: column;
@@ -13,7 +16,6 @@ const EstiloFeed = styled.div`
   justify-content: center;
   justify-items: center;
   margin: auto;
-  background-color: yellowgreen;
 `;
 
 const StyleListPosts = styled.div`
@@ -23,6 +25,7 @@ const StyleListPosts = styled.div`
   margin-top: 10px;
   align-items: center;
   width: 500px;
+  min-height: 200px;
 `;
 
 const StyleListDetails = styled.div`
@@ -30,6 +33,7 @@ const StyleListDetails = styled.div`
   border: solid black 1px;
   justify-content: space-evenly;
   width: 100%;
+  margin-top: 100px;
 `;
 
 let body;
@@ -38,8 +42,8 @@ function FeedPage() {
   useAuthorization();
   const token = localStorage.getItem("token");
 
-  const [posts, setPosts] = useState([""]);
-  const [curtir, setCurtir] = useState("");
+  const [posts, setPosts] = useState([]);
+  const [condicao, setCondicao] = useState();
 
   let history = useHistory();
 
@@ -53,6 +57,7 @@ function FeedPage() {
         Authorization: token,
       },
     };
+
     axios
       .get(
         "https://us-central1-labenu-apis.cloudfunctions.net/labEddit/posts",
@@ -60,12 +65,16 @@ function FeedPage() {
       )
       .then((response) => {
         setPosts(response.data.posts);
+        setCondicao(1);
+
         console.log(response);
       })
       .catch((error) => {
         console.log(error);
       });
   };
+
+  console.log(condicao);
 
   const votePost = (id, decisao, userVoteDirection) => {
     if (userVoteDirection === decisao) {
@@ -105,48 +114,59 @@ function FeedPage() {
 
   const listPosts = posts.map((post) => {
     return (
-      <StyleListPosts>
-        <h3>{post.username}</h3>
-        <div>{post.text}</div>
-        <StyleListDetails>
-          <div>
-            <button
-              onClick={() => votePost(post.id, 1, post.userVoteDirection)}
-            >
-              Curtir
-            </button>
-          </div>
-          <div>{post.votesCount}</div>
-          <div>
-            <button
-              onClick={() => votePost(post.id, -1, post.userVoteDirection)}
-            >
-              Descurtir
-            </button>
-          </div>
+      <Paper elevation={3}>
+        <StyleListPosts>
+          <h3>{post.username}</h3>
+          <div>{post.text}</div>
+          <StyleListDetails>
+            <div>
+              <button
+                onClick={() => votePost(post.id, 1, post.userVoteDirection)}
+              >
+                Curtir
+              </button>
+            </div>
+            <div>{post.votesCount}</div>
+            <div>
+              <button
+                onClick={() => votePost(post.id, -1, post.userVoteDirection)}
+              >
+                Descurtir
+              </button>
+            </div>
 
-          <div>
-            {post.commentsCount} - Comentários
-            <span>
-              <button onClick={() => goToPostPage(post.id)}>Detalhes</button>
-            </span>
-          </div>
-        </StyleListDetails>
-      </StyleListPosts>
+            <div>
+              {post.commentsCount} - Comentários
+              <span>
+                <button onClick={() => goToPostPage(post.id)}>Detalhes</button>
+              </span>
+            </div>
+          </StyleListDetails>
+        </StyleListPosts>
+      </Paper>
     );
   });
 
   console.log(posts);
 
-  return (
-    <div>
+  if (condicao === undefined) {
+    return (
       <EstiloFeed>
-        <CriarPost getPosts={getPosts} />
-        <hr></hr>
-        <div>{listPosts}</div>
+        <CircularProgress />
       </EstiloFeed>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div>
+        <EstiloFeed>
+          <h1>Feed</h1>
+          <CriarPost getPosts={getPosts} />
+          <hr></hr>
+          <div>{listPosts}</div>
+        </EstiloFeed>
+      </div>
+    );
+  }
 }
 
 export default FeedPage;
