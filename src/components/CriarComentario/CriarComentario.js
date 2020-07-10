@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import { useParams } from "react-router";
 
 const Container = styled.div`
   display: flex;
@@ -12,20 +13,20 @@ const Container = styled.div`
 `;
 const Entrada = styled.input``;
 
-const CriarPost = (props) => {
+const CriarComentario = (props) => {
   const token = localStorage.getItem("token");
-  const [textPost, setTextPost] = useState("");
+  const [textComment, setTextComment] = useState("");
 
   const history = useHistory();
+  const pathParams = useParams();
 
-  const handleInputPost = (event) => {
-    setTextPost(event.target.value);
+  const handleInputComment = (event) => {
+    setTextComment(event.target.value);
   };
 
-  const createPost = () => {
+  const createComment = () => {
     const body = {
-      text: textPost,
-      title: "Titulo aqui!",
+      text: textComment,
     };
 
     const headers = {
@@ -36,13 +37,13 @@ const CriarPost = (props) => {
 
     axios
       .post(
-        "https://us-central1-labenu-apis.cloudfunctions.net/labEddit/posts",
+        `https://us-central1-labenu-apis.cloudfunctions.net/labEddit/posts/${pathParams.postId}/comment`,
         body,
         headers
       )
       .then((response) => {
-        setTextPost("");
-        props.getPosts();
+        setTextComment("");
+        props.getPostDetail();
         console.log(response);
       })
       .catch((error) => {
@@ -57,18 +58,19 @@ const CriarPost = (props) => {
 
   return (
     <div>
-      <h1>Feed</h1>
+      <h1>Detalhes do Post</h1>
       <Container>
+        <p>Criar Comentário:</p>
         <Entrada
-          value={textPost}
-          onChange={handleInputPost}
-          placeholder="Escreva seu post!"
+          value={textComment}
+          onChange={handleInputComment}
+          placeholder="Comente aqui!"
         />
-        <button onClick={createPost}>Postar</button>
+        <button onClick={createComment}>Comentar</button>
         <button onClick={handleLogout}>Logout</button>
       </Container>
     </div>
   );
 };
 
-export default CriarPost;
+export default CriarComentario;
